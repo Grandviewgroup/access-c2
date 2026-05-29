@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ACCESS C-2 — They Will Judge Your Book By Its Cover</title>
+<style>
+:root{
+  --bg:#0b1118;--panel:#121d29;--panel2:#182638;
+  --ink:#f7f1e6;--muted:#c7bda9;--gold:#d5a642;
+  --blue:#9fc3d8;--line:rgba(255,255,255,.13);
+  --field:#08111a;--paper:#fbf7ed;--paperInk:#1a1a1a;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:Georgia,'Times New Roman',serif;background:linear-gradient(135deg,#0b1118,#102033 55%,#0c1118);color:var(--ink);line-height:1.7}
+a{color:var(--blue)}
+
+/* ── TOP BAR ── */
+.topbar{position:sticky;top:0;z-index:20;background:rgba(9,15,23,.94);backdrop-filter:blur(16px);border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px 18px}
+.brand{display:flex;gap:12px;align-items:center;font-family:Georgia,serif;font-weight:900;letter-spacing:.06em}
+.mark{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(135deg,var(--gold),#f1dda0);color:#101820;font-weight:900}
+.brand small{display:block;letter-spacing:0;color:var(--muted);font-weight:400;font-size:12px;font-family:Georgia,serif}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:rgba(255,255,255,.06);color:var(--ink);border-radius:999px;padding:8px 14px;font-weight:700;cursor:pointer;font-family:Georgia,serif;font-size:14px}
+.btn.primary{background:var(--gold);border-color:transparent;color:#101820}
+.btn:hover{filter:brightness(1.1)}
+
+/* ── HERO ── */
+.hero{padding:70px 24px 46px;border-bottom:1px solid var(--line);background:radial-gradient(circle at 80% 20%,rgba(213,166,66,.22),transparent 28%),radial-gradient(circle at 12% 12%,rgba(159,195,216,.15),transparent 33%)}
+.hero-inner{max-width:1180px;margin:auto;display:grid;grid-template-columns:1.15fr .85fr;gap:34px;align-items:center}
+.kicker{color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.13em;font-size:13px;font-family:Georgia,serif}
+.hero h1{font-size:clamp(32px,5vw,64px);line-height:1.05;margin:12px 0;font-family:Georgia,serif}
+.hero p{font-size:18px;color:var(--muted);max-width:680px}
+.cover-mock{
+  aspect-ratio:2/3;max-width:320px;justify-self:center;
+  background:#0c1a3a;
+  border-radius:14px;
+  box-shadow:0 36px 90px rgba(0,0,0,.65),0 0 0 1px rgba(213,166,66,.25);
+  padding:0;
+  display:flex;flex-direction:column;
+  overflow:hidden;
+  transform:rotate(1.5deg);
+}
+.cover-top-bar{
+  height:5px;background:linear-gradient(90deg,#d5a642,#f1dda0,#d5a642);
+  flex-shrink:0;
+}
+.cover-inner{
+  flex:1;display:flex;flex-direction:column;justify-content:space-between;
+  padding:22px 24px 24px;
+}
+.cover-series-label{
+  font-family:Arial,Helvetica,sans-serif;font-size:10px;font-weight:700;
+  letter-spacing:.22em;text-transform:uppercase;color:#d5a642;
+  margin-bottom:0;
+}
+.cover-title-block{flex:1;display:flex;flex-direction:column;justify-content:flex-start;padding:24px 0 14px}
+.cover-mock h2{
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:22px;line-height:1.15;font-weight:900;
+  text-transform:uppercase;letter-spacing:.04em;
+  color:#ffffff;margin:0;text-align:center;
+}
+.cover-mock h2 .gold-word{color:#d5a642}
+.cover-rule{
+  height:2px;background:linear-gradient(90deg,transparent,#d5a642,transparent);
+  margin:16px auto;width:70%;
+}
+.cover-mock .subtitle{
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:13px;line-height:1.5;font-weight:700;
+  color:#f0e8d4;text-align:center;margin:0;
+}
+.cover-bottom{border-top:1px solid rgba(213,166,66,.25);padding-top:14px;margin-top:4px}
+.cover-author{
+  font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:700;
+  letter-spacing:.1em;text-transform:uppercase;color:#d5a642;
+  text-align:center;margin-bottom:8px;
+}
+.cover-mock .foot{
+  font-family:Arial,Helvetica,sans-serif;font-size:9px;font-weight:700;
+  letter-spacing:.18em;text-transform:uppercase;color:rgba(240,232,212,.55);
+  text-align:center;
+}
+
+/* ── LAYOUT ── */
+.layout{display:grid;grid-template-columns:280px 1fr;gap:24px;max-width:1380px;margin:0 auto;padding:28px 22px}
+.sidebar{position:sticky;top:72px;align-self:start;max-height:calc(100vh - 90px);overflow:auto;background:rgba(18,29,41,.78);border:1px solid var(--line);border-radius:18px;padding:14px}
+.sidebar a{display:block;text-decoration:none;color:var(--muted);font-size:13px;padding:7px 10px;border-radius:10px;font-family:Georgia,serif}
+.sidebar a:hover{background:rgba(255,255,255,.06);color:var(--ink)}
+.sidebar .nav-group{color:var(--gold);font-size:11px;text-transform:uppercase;letter-spacing:.1em;padding:10px 10px 4px;font-family:Georgia,serif}
+.progress-bg{height:6px;background:#071018;border-radius:99px;overflow:hidden;margin:8px 10px}
+.progress-bar{height:100%;width:0;background:linear-gradient(90deg,var(--gold),#80caa8);transition:width .3s}
+#progressText{font-size:11px;color:var(--muted);margin:4px 10px 12px;font-family:Georgia,serif}
+
+/* ── CONTENT BLOCKS ── */
+.main{min-width:0}
+.section-label{margin:30px 0 16px}
+.section-label span{color:var(--gold);font-weight:700;text-transform:uppercase;letter-spacing:.12em;font-size:11px;font-family:Georgia,serif}
+.section-label h2{font-size:30px;margin:4px 0;font-family:Georgia,serif}
+.section-label p{color:var(--muted);margin-top:4px;font-size:15px}
+
+.pdf-page{background:var(--paper);color:var(--paperInk);border:1px solid var(--line);border-radius:20px;margin-bottom:18px;padding:28px 32px;box-shadow:0 18px 36px rgba(0,0,0,.18)}
+.pdf-page h3{font-size:24px;margin:24px 0 10px;color:#1a2733;font-family:Georgia,serif}
+.pdf-page h4{font-size:16px;margin:20px 0 8px;color:#5c4212;font-family:Georgia,serif;text-transform:uppercase;letter-spacing:.05em}
+.pdf-page p{margin:0 0 14px;line-height:1.75}
+.page-label{display:inline-block;background:#1a2733;color:#fff;border-radius:999px;padding:3px 10px;font-size:11px;margin-bottom:12px;font-family:Georgia,serif}
+
+.exercise{background:rgba(18,29,41,.84);border:1px solid var(--line);border-radius:20px;margin-bottom:18px;padding:26px;box-shadow:0 18px 36px rgba(0,0,0,.18)}
+.exercise h3{font-size:22px;margin:0 0 14px;font-family:Georgia,serif;color:var(--gold)}
+
+label{display:block;font-weight:700;color:#f3d78d;font-family:Georgia,serif;font-size:14px}
+textarea,input,select{width:100%;margin-top:6px;border:1px solid rgba(255,255,255,.16);background:var(--field);color:var(--ink);border-radius:12px;padding:12px;font:inherit;font-family:Georgia,serif}
+textarea{min-height:100px;resize:vertical}
+.tall{min-height:190px}
+
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+
+.checks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 14px;margin:12px 0}
+.checks label{font-weight:500;color:var(--muted);font-size:13px}
+.checks input{width:auto;margin-right:8px}
+
+.prompt{white-space:pre-wrap;background:#061018;border:1px solid rgba(213,166,66,.35);border-radius:16px;padding:16px;color:#f8ecd0;max-height:420px;overflow:auto;font-family:Georgia,serif;font-size:14px;line-height:1.6}
+
+/* ── TABLES ── */
+table{width:100%;border-collapse:collapse;border-radius:14px;overflow:hidden;margin:16px 0}
+.pdf-page table{border:1px solid #c8b89a}
+.pdf-page th{background:#1a2733;color:#f0e8d4;text-align:left;padding:12px 14px;font-family:Georgia,serif;font-size:14px}
+.pdf-page td{border:1px solid #d4c5a8;padding:11px 14px;vertical-align:top;font-size:14px;line-height:1.65}
+.pdf-page td:first-child{font-weight:600;color:#2c1f0a}
+.pdf-page tr:nth-child(even) td{background:rgba(0,0,0,.04)}
+
+.exercise table,.chart-block table{border:1px solid var(--line)}
+.exercise th,.chart-block th{background:rgba(213,166,66,.18);color:#f8df9b;text-align:left;padding:12px 14px;font-family:Georgia,serif;font-size:14px}
+.exercise td,.chart-block td{border:1px solid var(--line);padding:11px 14px;vertical-align:top;font-size:14px;line-height:1.65}
+.exercise tr:nth-child(even) td,.chart-block tr:nth-child(even) td{background:rgba(255,255,255,.03)}
+
+.chart-block{background:rgba(18,29,41,.84);border:1px solid var(--line);border-radius:20px;margin-bottom:18px;padding:26px;box-shadow:0 18px 36px rgba(0,0,0,.18)}
+.chart-block h3{font-size:20px;margin:0 0 6px;font-family:Georgia,serif;color:var(--gold)}
+.chart-block p{color:var(--muted);font-size:14px;margin:0 0 14px}
+
+.source-note{color:#888;font-size:12px;margin-top:10px;font-style:italic}
+.note-box{background:rgba(213,166,66,.08);border-left:3px solid var(--gold);border-radius:0 10px 10px 0;padding:14px 16px;margin:14px 0;font-size:14px;color:var(--muted)}
+
+/* ── FOOTER ── */
+.footer{max-width:1380px;margin:0 auto;padding:30px 22px 60px;color:var(--muted);font-size:13px;font-family:Georgia,serif}
+
+/* ── RESPONSIVE ── */
+@media(max-width:960px){
+  .hero-inner,.layout{grid-template-columns:1fr}
+  .sidebar{position:relative;top:0}
+  .grid,.grid.three,.checks{grid-template-columns:1fr}
+  .cover-mock{max-width:260px}
+  .topbar{align-items:flex-start;flex-direction:column}
+}
+
+/* ── PRINT ── */
+@media print{
+  body{background:white;color:#111}
+  .topbar,.sidebar,.actions{display:none!important}
+  .layout{display:block;padding:0}
+  .hero{padding:18px;background:white;border:0}
+  .hero-inner{display:block}
+  .cover-mock{display:none}
+  .pdf-page,.exercise,.chart-block{background:white;color:#111;border:1px solid #ccc;box-shadow:none;break-inside:avoid}
+  .pdf-page th{background:#ddd;color:#111}
+  .pdf-page td{border-color:#bbb}
+  textarea,input{background:white;color:#111;border:1px solid #999}
+  .prompt{background:white;color:#111}
+  .section-label h2{color:#111}
+  .checks{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="brand">
+    <div class="mark">A</div>
+    <div>ACCESS <small>Section C-2 · Interactive Course Module</small></div>
+  </div>
+  <div class="actions">
+    <button class="btn" onclick="saveNow()">Save</button>
+    <button class="btn" onclick="downloadJSON()">Export Answers</button>
+    <button class="btn" onclick="window.print()">Print / Save PDF</button>
+    <button class="btn" onclick="clearAll()">Clear</button>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="kicker">Concept Module · Section C-2</div>
+      <h1>They Will Judge Your Book By Its Cover</h1>
+      <p>How to Make Your Title, Subtitle, and Cover Theme Sell Your Book. This interactive version includes the complete module text, full reference charts, and all six exercise parts.</p>
+    </div>
+    <div class="cover-mock">
+      <div class="cover-top-bar"></div>
+      <div class="cover-inner">
+        <div class="cover-title-block">
+          <h2>They Will <span class="gold-word">Judge</span> Your Book By Its Cover</h2>
+          <div class="cover-rule"></div>
+          <div class="subtitle">How to Make Your Title, Subtitle, and Cover Theme Sell Your Book</div>
+        </div>
+        <div class="cover-bottom">
+          <div class="cover-author">Access · Concept Module · Section C-2</div>
+          <div class="foot">The Grandview Group · S4CGV</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MAIN LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR NAV -->
+  <nav class="sidebar">
+    <div class="progress-bg"><div id="progressBar" class="progress-bar"></div></div>
+    <p id="progressText">0% complete</p>
+
+    <div class="nav-group">Module Text</div>
+    <a href="#intro">Introduction</a>
+    <a href="#promise">C-2.2 The Promise</a>
+    <a href="#front-cover">C-2.3 Front Cover</a>
+    <a href="#subtitle">C-2.4 Subtitle Strategy</a>
+    <a href="#seven">C-2.5 Seven Strategies</a>
+    <a href="#design">C-2.6 Design Elements</a>
+    <a href="#typography-chart">↳ Typography Chart</a>
+    <a href="#color-chart">↳ Color Chart</a>
+    <a href="#imagery">↳ Imagery</a>
+    <a href="#face">C-2.7 Author Photo</a>
+    <a href="#thumbnail">C-2.8 Amazon Test</a>
+    <a href="#why-now">C-2.9 Why Now</a>
+
+    <div class="nav-group">Exercises</div>
+    <a href="#fieldtrip">Ten-Minute Field Trip</a>
+    <a href="#part-one">Part 1 · Trigger List</a>
+    <a href="#part-two">Part 2 · AI Expansion</a>
+    <a href="#part-three">Part 3 · Titles & Subtitles</a>
+    <a href="#emotion">Emotion Triggers</a>
+    <a href="#part-four">Part 4 · Promise Test</a>
+    <a href="#part-five">Part 5 · Author Positioning</a>
+    <a href="#part-six">Part 6 · Cover Prompts</a>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- ═══ INTRODUCTION ═══ -->
+    <section id="intro">
+      <div class="section-label"><span>Section C-2</span><h2>Introduction</h2></div>
+
+      <article class="pdf-page">
+        <p>This module starts with the cover of the book you are writing or want to write. Not because the cover comes first. It rarely does. But because the question your cover must answer is the same question that should be driving every page of your manuscript.</p>
+        <p>Plan on approximately two hours for the reading and the exercises combined. Some authors will move faster. Others will want more time. Either is fine. An investment of two hours here will save you a multiple of that later, by helping you write with greater clarity and purpose from the very first page.</p>
+
+        <h4>What You Will Learn and Do</h4>
+        <table>
+          <thead>
+            <tr><th>What You Will Learn</th><th>What You Will Do</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Why the title and subtitle of your book are the most important sentences you will write, and what makes them succeed or fail.</td>
+              <td>Build a Trigger List that captures the vocabulary of your target audience's aspirations, fears, and needs.</td>
+            </tr>
+            <tr>
+              <td>The two kinds of promise a non-fiction book can make, and which one applies to your book.</td>
+              <td>Generate and test title and subtitle candidates against your book's core value proposition.</td>
+            </tr>
+            <tr>
+              <td>Seven strategies professionals use to develop titles and subtitles that stop browsers and convert readers.</td>
+              <td>Develop a clear statement of the expertise and perspective you bring to this subject.</td>
+            </tr>
+            <tr>
+              <td>How typography, color, and imagery communicate meaning before a reader processes a single word.</td>
+              <td>Create an AI-generated front cover and back cover mock that makes your book more real and motivating than it has perhaps ever been.</td>
+            </tr>
+            <tr>
+              <td>Why doing this exercise now, at any stage of the writing process, accelerates the work that follows.</td>
+              <td></td>
+            </tr>
+          </tbody>
+        </table>
+      </article>
+    </section>
+
+    <!-- ═══ C-2.2 THE PROMISE ═══ -->
+    <section id="promise">
+      <div class="section-label"><span>C-2.2</span><h2>The Promise Your Cover Must Make</h2></div>
+      <article class="pdf-page">
+        <p>You have heard it your whole life: you cannot judge a book by its cover. In the marketplace, that saying is simply false. Readers judge books by their covers every day. They do it in two seconds on a bookshelf. They do it in less time than that scrolling through Amazon search results. Before a reader reads a word, they have already felt something. The cover is not decoration. For most non-fiction books, it is a promise.</p>
+        <p>That promise takes one of two forms. Some books make an <strong>Action Promise</strong>. They tell the reader what they will be able to do, solve, or achieve. Others make an <strong>Insight Promise</strong>. They offer the reader a perspective, understanding, or experience of something they could not otherwise access. Both kinds of promise must be specific. Both must be compelling. Both must be written for the reader, not the author. The question your title and subtitle must answer is one of these two:</p>
+        <p><em>What will this book help me achieve, solve, or do?</em><br>Or: <em>What will this book help me understand or see differently?</em></p>
+        <p><strong>Atomic Habits</strong> — <em>An Easy and Proven Way to Build Good Habits and Break Bad Ones</em> — is a pure Action Promise. The subtitle tells you exactly what the book will help you do, who it is for, and what makes it different. A reader who picks this up knows within three seconds whether it is for them.</p>
+        <p><strong>The Obstacle Is the Way</strong> — <em>The Timeless Art of Turning Trials into Triumph</em> — is also an Action Promise, but with a philosophical edge. The title contradicts conventional wisdom. The subtitle promises a transferable skill.</p>
+        <p><strong>Lincoln's Melancholy</strong> — <em>How Depression Challenged a President and Fueled His Greatness</em> — is a pure Insight Promise. It does not promise a skill or a strategy. It promises understanding: a view into the interior life of a historical figure that changes how you see both the man and the subject of depression itself.</p>
+        <p><strong>Rich Dad Poor Dad</strong> — <em>What the Rich Teach Their Kids About Money That the Poor and Middle Class Do Not</em> — carries both promises simultaneously. It implies a secret the reader does not yet know. It also suggests that learning it will change what they do with money.</p>
+        <p>The lesson from all of these is the same. The promise is not about the author, and it is not about the subject. It is about what the reader will have, know, or be able to do that they do not have now. That is the only question your cover must answer.</p>
+      </article>
+    </section>
+
+    <!-- ═══ C-2.3 FRONT COVER ═══ -->
+    <section id="front-cover">
+      <div class="section-label"><span>C-2.3</span><h2>The Front Cover Has One Job</h2></div>
+      <article class="pdf-page">
+        <p>Many first-time authors approach the cover as an identity statement. They want their name prominent, their photo front and center, their credentials on display. This instinct is completely understandable. It is also backwards.</p>
+        <p>An author with a national platform can lead with identity because their name IS the promise. For everyone else, the promise must come first. There is a simple sequencing principle worth committing to memory:</p>
+        <p><strong>Your cover earns the pick-up. Your back cover earns the purchase.</strong></p>
+        <p>Those are two different jobs requiring two different conversations with the reader. The front cover speaks to a stranger who does not know you. Its only task is to make that stranger want to turn the book over. The back cover picks up where the front cover left off. It expands the promise, establishes the author's credibility, and answers the reader's most important unspoken question: why should I trust this person with my time?</p>
+        <p><strong>Front cover: Deliver the promise. Back cover: Expand the promise and earn the trust.</strong></p>
+      </article>
+    </section>
+
+    <!-- ═══ C-2.4 SUBTITLE ═══ -->
+    <section id="subtitle">
+      <div class="section-label"><span>C-2.4</span><h2>The Subtitle Is the Strategy</h2></div>
+      <article class="pdf-page">
+        <p>Your title can be evocative, clever, or intriguing. Your subtitle must be clear. The title earns attention. The subtitle converts it. A reader who pauses at your title is curious. A reader who reads your subtitle and immediately understands what the book will do for them is a reader who is about to make a purchase decision. That is the work the subtitle does, and it has roughly ten words to do it in.</p>
+        <p>A strong subtitle communicates three things: who the book is for, what question or challenge it engages, and what the reader will know, feel, or be able to do differently after reading it. That third point is the most important, and the most commonly missed.</p>
+        <p>There is a second benefit to a well-crafted subtitle that most authors do not discover until it is pointed out. A subtitle that commits to a specific promise frequently becomes the organizational superstructure of the book itself. A subtitle that promises the reader will learn to find, pitch, and close investors has just produced three sections. The subtitle is not just marketing. It is architecture.</p>
+      </article>
+    </section>
+
+    <!-- ═══ C-2.5 SEVEN STRATEGIES ═══ -->
+    <section id="seven">
+      <div class="section-label"><span>C-2.5</span><h2>Seven Ways to Stretch Your Thinking</h2></div>
+      <article class="pdf-page">
+        <p>Professional book marketers and experienced authors do not sit down and wait for a title to arrive. They work for it. The seven strategies below are the angles worth trying. None of them will give you a finished title. All of them will give you raw material you would not have found otherwise.</p>
+        <h4>1. Metaphors and Analogies</h4>
+        <p>The best titles often hide inside a metaphor. <em>Crossing the Chasm</em> is a technology business book, but the title works because the chasm is real. <em>Blue Ocean Strategy</em> is not about water. When you find the right metaphor for what your book does, you stop describing your subject and start making your reader feel it.</p>
+        <h4>2. Questions the Reader Is Already Asking</h4>
+        <p>Every reader arrives at your book from somewhere. The Action Promise reader often arrives with urgency — something is not working and they need a solution. The Insight Promise reader arrives differently — curious, browsing, open to being fascinated. The right title stops them because it names something they are already thinking about.</p>
+        <h4>3. Pop Culture Phrases and References</h4>
+        <p>Borrowed language carries borrowed familiarity. A title or subtitle that echoes a phrase already living in your reader's memory creates an instant sense of recognition. The key is to find a reference that your target audience shares and that genuinely fits the territory of your book.</p>
+        <h4>4. Adaptable Slogans</h4>
+        <p>Some of the most tested language in human communication lives in advertising. You cannot use famous slogans directly. But you can use their architecture. The key is identifying the pivot word and replacing it with your book's core action or subject.</p>
+        <h4>5. Word Play</h4>
+        <p>Puns, double-entendres, alliteration, coined words, and other forms of linguistic ingenuity can produce titles that are genuinely unforgettable. <em>Freakonomics</em> is a coined word that signals the book will look at economics in a way that feels slightly transgressive. The test is simple: does the word play illuminate the subject, or does it obscure it?</p>
+        <h4>6. Contradiction and Tension</h4>
+        <p>Titles that place two opposing ideas in deliberate conflict create a question in the reader's mind that can only be resolved by opening the book. <em>Rich Dad Poor Dad</em> is a contradiction. So is <em>The Obstacle Is the Way</em>. The contradiction does not need to be dramatic. It just needs to be real.</p>
+        <h4>7. The Implied Promise or Secret</h4>
+        <p>Some of the most powerful titles and subtitles in publishing history are built on a single rhetorical move: the suggestion that the reader is about to be let in on something they were never supposed to know. Ask yourself what your reader does not know about your subject that they would want to know the moment they realized they did not know it.</p>
+        <div class="note-box"><strong>Note on all seven:</strong> These strategies are not mutually exclusive. The strongest titles often combine two or three. Work through each strategy independently and then look for combinations.</div>
+      </article>
+    </section>
+
+    <!-- ═══ C-2.6 DESIGN ELEMENTS ═══ -->
+    <section id="design">
+      <div class="section-label"><span>C-2.6</span><h2>Design Elements: What Every Author Should Think About</h2></div>
+      <article class="pdf-page">
+        <p>Authors are not cover designers. That is not the point of this section. Every design decision on a cover communicates something — a feeling, a tone, an unspoken signal about what kind of book this is and who it is for. Understanding how typography, color, and imagery work will not make you a designer. It will make you a more intentional author, one who can articulate what their cover should feel like and why.</p>
+
+        <h4>Typography and Your Cover</h4>
+        <p>Typography is not just the font your title is printed in. It is a voice. Before a reader processes the meaning of your title, they have already registered its personality — whether it feels authoritative or approachable, urgent or contemplative, modern or classical.</p>
+        <p>Consider the original 1997 cover of <em>Rich Dad Poor Dad</em>. The typographic contrast between the two title elements was not accidental. Before a reader processed a single word of the subtitle, the design had already delivered the book's central argument visually. The message was embedded in the letterforms.</p>
+      </article>
+    </section>
+
+    <!-- ═══ FULL TYPOGRAPHY CHART ═══ -->
+    <section id="typography-chart">
+      <div class="section-label"><span>C-2.6 Reference</span><h2>Typography Reference Chart — Full</h2><p>Use this chart to identify the typographic direction that best fits your book's promise and intended reader.</p></div>
+      <div class="chart-block">
+        <table>
+          <thead>
+            <tr>
+              <th>Typeface Category</th>
+              <th>Emotional Associations</th>
+              <th>Common Non-Fiction Genres</th>
+              <th>Typeface Examples</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Traditional Serif</strong><br><small>Garamond, Caslon, Palatino</small></td>
+              <td>Authority, trust, timelessness, established expertise, scholarly weight</td>
+              <td>History, biography, literary nonfiction, academic, business classics</td>
+              <td>Google Fonts: EB Garamond, Cormorant<br>Adobe Fonts: Adobe Caslon Pro</td>
+            </tr>
+            <tr>
+              <td><strong>Transitional Serif</strong><br><small>Baskerville, Times New Roman, Georgia</small></td>
+              <td>Reliable, readable, balanced, neutral authority, accessible gravitas</td>
+              <td>General nonfiction, journalism, reference, textbook, policy</td>
+              <td>Google Fonts: Libre Baskerville, Lora<br>Adobe Fonts: Baskerville MT</td>
+            </tr>
+            <tr>
+              <td><strong>Modern / Didone Serif</strong><br><small>Bodoni, Didot, Playfair Display</small></td>
+              <td>Luxury, elegance, high contrast, refinement, prestige, aspirational</td>
+              <td>Premium business, aspirational self-help, design, fashion-adjacent</td>
+              <td>Google Fonts: Playfair Display<br>Adobe Fonts: Bodoni 72</td>
+            </tr>
+            <tr>
+              <td><strong>Humanist Sans-Serif</strong><br><small>Gill Sans, Myriad, Frutiger, Optima</small></td>
+              <td>Approachable, warm, modern, accessible, conversational, human</td>
+              <td>Self-help, personal development, health and wellness, parenting, memoir</td>
+              <td>Google Fonts: Lato, Open Sans<br>Adobe Fonts: Myriad Pro</td>
+            </tr>
+            <tr>
+              <td><strong>Geometric Sans-Serif</strong><br><small>Futura, Avenir, Montserrat</small></td>
+              <td>Clean, precise, forward-thinking, innovative, architectural, progressive</td>
+              <td>Technology, science, business innovation, thought leadership, design</td>
+              <td>Google Fonts: Montserrat, Nunito<br>Adobe Fonts: Futura PT</td>
+            </tr>
+            <tr>
+              <td><strong>Grotesque / Neo-Grotesque Sans</strong><br><small>Helvetica, Univers, Akzidenz-Grotesk</small></td>
+              <td>Neutral authority, utilitarian, democratic, confident plainness, objective</td>
+              <td>Corporate, investigative journalism, political, social science, economics</td>
+              <td>Google Fonts: Work Sans, DM Sans<br>Adobe Fonts: Helvetica Neue</td>
+            </tr>
+            <tr>
+              <td><strong>Slab Serif</strong><br><small>Rockwell, Clarendon, Archer</small></td>
+              <td>Bold, grounded, confident, direct, no-nonsense, dependable</td>
+              <td>Business, entrepreneurship, personal finance, sports, leadership</td>
+              <td>Google Fonts: Roboto Slab, Arvo<br>Adobe Fonts: Rockwell</td>
+            </tr>
+            <tr>
+              <td><strong>Condensed Variants</strong><br><small>Barlow Condensed, Impact, Trade Gothic</small></td>
+              <td>Urgency, impact, authority at scale, intensity, high-information density</td>
+              <td>Sales, motivational, political, crisis response, high-stakes subjects</td>
+              <td>Google Fonts: Barlow Condensed<br>Adobe Fonts: Trade Gothic</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="source-note">Sources: Bringhurst, <em>The Elements of Typographic Style</em>, 3rd ed. (2004); Lupton, <em>Thinking with Type</em>, 2nd ed. (2010); Larson, Hazlett, Chaparro, and Picard, "Measuring the Aesthetics of Reading," in <em>People and Computers XX — Engage</em>, Springer (2007).</p>
+      </div>
+    </section>
+
+    <!-- ═══ FULL COLOR CHART ═══ -->
+    <section id="color-chart">
+      <div class="section-label"><span>C-2.6 Reference</span><h2>Color Reference Chart — Full</h2><p>Before you select a color direction, identify which Emotion Triggers your book activates. Then match those triggers to the colors below.</p></div>
+      <div class="chart-block">
+        <table>
+          <thead>
+            <tr>
+              <th>Color</th>
+              <th>Positive Associations</th>
+              <th>Negative Connotations</th>
+              <th>Common Genres</th>
+              <th>Cultural Note</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Navy / Dark Blue</strong></td>
+              <td>Authority, trust, expertise, calm, stability, professionalism</td>
+              <td>Cold, distant, corporate, impersonal</td>
+              <td>Business, leadership, finance, history, politics, academic</td>
+              <td>Near-universal trust association across Western and Eastern cultures. One of the safest cover colors for non-fiction credibility.</td>
+            </tr>
+            <tr>
+              <td><strong>Red</strong></td>
+              <td>Urgency, passion, energy, power, confidence, action</td>
+              <td>Danger, aggression, alarm, overwhelm</td>
+              <td>Sales, entrepreneurship, politics, sports, motivational</td>
+              <td>High-arousal color. Performs strongly on Action Promise covers. Use with restraint — it can overwhelm when used as a dominant background.</td>
+            </tr>
+            <tr>
+              <td><strong>Black</strong></td>
+              <td>Sophistication, authority, premium quality, boldness, timelessness</td>
+              <td>Heaviness, austerity, inaccessibility</td>
+              <td>Business, finance, leadership, luxury, edgy nonfiction</td>
+              <td>Culturally stable across most markets. Works well as a dominant background when the title treatment is strong and clean.</td>
+            </tr>
+            <tr>
+              <td><strong>White / Cream</strong></td>
+              <td>Clarity, openness, minimalism, cleanliness, honesty, simplicity</td>
+              <td>Coldness, emptiness, clinical feel</td>
+              <td>Wellness, spirituality, minimalist lifestyle, health, personal clarity</td>
+              <td>Works best as a dominant background with strong typographic color. Signals openness and directness.</td>
+            </tr>
+            <tr>
+              <td><strong>Gold / Deep Yellow</strong></td>
+              <td>Achievement, wisdom, value, warmth, optimism, earned success</td>
+              <td>Excess, ostentation, instability</td>
+              <td>Personal finance, self-help, motivation, legacy, business achievement</td>
+              <td>High-visibility accent. More often used for titles and accents than dominant backgrounds. Signals aspiration without aggression.</td>
+            </tr>
+            <tr>
+              <td><strong>Forest / Deep Green</strong></td>
+              <td>Growth, balance, nature, health, renewal, stability, money</td>
+              <td>Passivity, envy, stagnation</td>
+              <td>Health, environment, sustainability, personal growth, finance</td>
+              <td>Strong genre signal for health and wellness. Deep greens read as sophisticated; bright greens read as energetic or environmental.</td>
+            </tr>
+            <tr>
+              <td><strong>Deep Teal</strong></td>
+              <td>Intelligence, clarity, depth, modern authority, trustworthy insight</td>
+              <td>Cold, clinical, indeterminate genre</td>
+              <td>Science, technology, environment, investigative, psychology</td>
+              <td>Growing use in business and science nonfiction. Combines the trust of blue with the vitality of green. Reads as contemporary and considered.</td>
+            </tr>
+            <tr>
+              <td><strong>Purple / Deep Violet</strong></td>
+              <td>Creativity, spirituality, mystery, wisdom, nobility, transformation</td>
+              <td>Artificiality, ambiguity, niche appeal</td>
+              <td>Spirituality, psychology, creativity, self-transformation, New Age</td>
+              <td>Genre-specific. Use with a clear target audience in mind. Mid-range purples can read as generic; deep violets carry more authority.</td>
+            </tr>
+            <tr>
+              <td><strong>Burnt Orange / Terracotta</strong></td>
+              <td>Energy, warmth, creativity, approachability, cultural richness</td>
+              <td>Informality, regional connotation, dated feel if misused</td>
+              <td>Memoir, creativity, cultural topics, food, travel, personal narrative</td>
+              <td>Trending in literary nonfiction. Signals warmth without the aggression of red. Works well for books with a personal, lived-experience voice.</td>
+            </tr>
+            <tr>
+              <td><strong>Warm Gray / Charcoal</strong></td>
+              <td>Professionalism, sophistication, neutrality, restraint, seriousness</td>
+              <td>Blandness, ambiguity, low energy</td>
+              <td>Business, social science, investigative, academic, policy</td>
+              <td>Versatile support color. Rarely works as the sole dominant tone but creates authority when paired with strong typographic color or a bold accent.</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="source-note">Sources: Valdez and Mehrabian, "Effects of Color on Emotions," <em>Journal of Experimental Psychology: General</em> 123(4), 394–409 (1994); Jonauskaite et al., "Universal Patterns in Color-Emotion Associations Are Further Shaped by Linguistic and Geographic Proximity," <em>Psychological Science</em> 31(10), 1245–1260 (2020); Pantone Color Institute; Williams, <em>The Non-Designer's Design Book</em>, 4th ed. (2014).</p>
+      </div>
+    </section>
+
+    <!-- ═══ IMAGERY ═══ -->
+    <section id="imagery">
+      <div class="section-label"><span>C-2.6 cont.</span><h2>Imagery and Your Cover</h2></div>
+      <article class="pdf-page">
+        <p>Images on a book cover earn their place only when they do conceptual work. A decorative image — one chosen because it looks appealing or vaguely relevant — adds visual noise without adding meaning. Before committing to a cover image, every author should ask one question: does this image reinforce the promise of my title and subtitle, or does it compete with it?</p>
+        <p>The most powerful cover images share a common characteristic: they create a question in the reader's mind that the title and subtitle then answer. A reader who sees a single small boat crossing a vast, empty ocean before reading the title is already experiencing something: solitude, ambition, risk, freedom. If the title then names that feeling precisely, the image and the title have worked together to produce a moment of recognition that is far more powerful than either could produce alone.</p>
+        <p>It is worth noting that some of the strongest non-fiction covers use no image at all. <em>Atomic Habits</em>, <em>The Obstacle Is the Way</em>, and <em>Thinking Fast and Slow</em> are purely or predominantly typographic. The decision to use an image should never be made by default. It should be made because a specific image makes the cover's promise stronger, clearer, or more emotionally resonant than typography and color alone could achieve.</p>
+      </article>
+    </section>
+
+    <!-- ═══ C-2.7 AUTHOR PHOTO ═══ -->
+    <section id="face">
+      <div class="section-label"><span>C-2.7</span><h2>Should You Put Your Face on the Cover?</h2></div>
+      <article class="pdf-page">
+        <p>The question of whether to put your photo on the front cover has a simple answer for most first-time authors: do not. This is not about false modesty. It is about sequencing. The front cover has one job: to deliver the promise. An author photo on the front cover shifts the reader's attention from the promise to the person making it. That shift only works when the person is already famous enough that their name and face ARE the promise.</p>
+        <p>Consider Robert Kiyosaki. When <em>Rich Dad Poor Dad</em> was first self-published in 1997 through his own Tech Press imprint, his photo did not appear on the cover. The cover led with the promise, not the person. Even when Warner Books picked up the title commercially in 2000, Kiyosaki's photo stayed off the front cover. The concept carried everything. The author photo on the front cover is a reward for an audience already built, not a tool for building one.</p>
+        <p>There is a practical benefit to keeping your photo off the front cover: it frees up real estate for the element that will do more to convert a browser into a buyer than anything else — a compelling subtitle.</p>
+      </article>
+    </section>
+
+    <!-- ═══ C-2.8 AMAZON TEST ═══ -->
+    <section id="thumbnail">
+      <div class="section-label"><span>C-2.8</span><h2>The Amazon Thumbnail Test</h2></div>
+      <article class="pdf-page">
+        <p>Most books are discovered online before they are ever held in a hand. On Amazon, a reader's first encounter with your book is almost always a small thumbnail image on a search results page — roughly 120 by 180 pixels. The covers that perform best in that environment are the ones built around the same qualities this module has been asking you to develop: a title that reads clearly at any size, a visual impression that communicates category and tone in a single glance, and a cover theme that feels intentional rather than assembled.</p>
+        <p>Look at the non-fiction covers that consistently appear on Amazon bestseller lists and you will see the same instincts at work. <em>Atomic Habits</em> leads with bold, clean typography and a cover that communicates its category instantly. <em>The Obstacle Is the Way</em> uses stark simplicity — nothing competes for attention, everything is in service of the title. These covers work in a bookstore window, on a library shelf, and as a thumbnail on a mobile screen because they were built around a clear idea rather than a collection of design elements.</p>
+      </article>
+    </section>
+
+    <!-- ═══ C-2.9 WHY NOW ═══ -->
+    <section id="why-now">
+      <div class="section-label"><span>C-2.9</span><h2>Why Do This Exercise Now?</h2></div>
+      <article class="pdf-page">
+        <p>Here is something authors who have worked through this exercise consistently report: the writing gets easier afterward. Not because the exercise writes the book for them. Because it gives them a target to write toward. A manuscript written in the direction of a clear promise — a specific title, a specific subtitle, a specific sense of what the cover should feel like and why — is more focused, more disciplined, and more purposeful than one written in search of its own meaning.</p>
+        <p>This module works at any stage of the writing process. If you have not yet written a word, it will give you a target to write toward. If you are mid-draft, it will help you assess whether the book you are writing is delivering on the promise your title and subtitle are making. If you are approaching a final draft, it will sharpen the language you use to describe and position your book.</p>
+        <p>The cover and back cover you produce in the exercises that follow are concept artifacts — preliminary visual representations of your book that make the project more real, more concrete, and more motivating than a manuscript alone can. Many authors print them. Some frame them. Almost all of them find that seeing their book, even in preliminary form, changes how they feel about finishing it.</p>
+      </article>
+    </section>
+
+    <!-- ════════════════════════════════════
+         EXERCISES
+    ════════════════════════════════════ -->
+
+    <!-- FIELD TRIP -->
+    <section id="fieldtrip">
+      <div class="section-label"><span>Before You Begin</span><h2>Ten-Minute Field Trip</h2></div>
+      <article class="exercise">
+        <p>Search Amazon for non-fiction books in your category — the ones that would compete with your book for the same reader. Find three titles and examine them with fresh eyes. For each one, write the title and subtitle and note in a single sentence what the subtitle promises the reader.</p>
+        <p>A crowded shelf is not a reason to abandon your book. It is a map. Is your instinctive title too similar to something already on that shelf? Is there a promise none of the existing books are making that yours could make?</p>
+        <div class="grid three">
+          <label>Competitor 1 — Title and Subtitle<textarea data-key="comp1_title"></textarea></label>
+          <label>What does the subtitle promise?<textarea data-key="comp1_promise"></textarea></label>
+          <label>What should your book learn from this?<textarea data-key="comp1_learn"></textarea></label>
+          <label>Competitor 2 — Title and Subtitle<textarea data-key="comp2_title"></textarea></label>
+          <label>What does the subtitle promise?<textarea data-key="comp2_promise"></textarea></label>
+          <label>What should your book learn from this?<textarea data-key="comp2_learn"></textarea></label>
+          <label>Competitor 3 — Title and Subtitle<textarea data-key="comp3_title"></textarea></label>
+          <label>What does the subtitle promise?<textarea data-key="comp3_promise"></textarea></label>
+          <label>What should your book learn from this?<textarea data-key="comp3_learn"></textarea></label>
+        </div>
+      </article>
+    </section>
+
+    <!-- PART ONE -->
+    <section id="part-one">
+      <div class="section-label"><span>Exercise C-2 · Part One</span><h2>Build Your Trigger List</h2></div>
+      <article class="exercise">
+        <p>Write single words, short phrases, questions, fragments — anything that belongs to the territory of your book and the emotional world of your readers. Write quickly and evaluate nothing. Volume is the goal. The most useful triggers almost never appear first.</p>
+        <label>My Trigger List<textarea class="tall" data-key="triggerList"></textarea></label>
+
+        <h3 style="margin-top:24px">Audience Personas</h3>
+        <p>Sketch two or three brief portraits of the specific reader your book is written for — who they are, what they fear, what they aspire to, and what language they use to describe their situation.</p>
+        <div class="grid three">
+          <label>Persona 1<textarea data-key="persona1"></textarea></label>
+          <label>Persona 2<textarea data-key="persona2"></textarea></label>
+          <label>Persona 3<textarea data-key="persona3"></textarea></label>
+        </div>
+      </article>
+    </section>
+
+    <!-- PART TWO -->
+    <section id="part-two">
+      <div class="section-label"><span>Exercise C-2 · Part Two</span><h2>Expand Your Trigger List with AI</h2></div>
+      <article class="exercise">
+        <p>Fill in your personas and Trigger List above, then click the button to generate a fully populated AI prompt. Paste it into Claude, ChatGPT, or any other conversational AI. Work with the output in real time — highlight what resonates and add it to your Trigger List.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px">
+          <button class="btn primary" onclick="makeTriggerPrompt()">Generate AI Trigger Prompt</button>
+          <button class="btn" onclick="copyOut('triggerPrompt')">Copy Prompt</button>
+        </div>
+        <pre id="triggerPrompt" class="prompt">Your personas and Trigger List will appear here as a ready-to-paste AI prompt.</pre>
+        <label style="margin-top:16px">AI-expanded words, phrases, and ideas to keep<textarea class="tall" data-key="expandedTriggerList"></textarea></label>
+      </article>
+    </section>
+
+    <!-- PART THREE -->
+    <section id="part-three">
+      <div class="section-label"><span>Exercise C-2 · Part Three</span><h2>Generate Your Titles and Subtitles</h2></div>
+      <article class="exercise">
+        <p>Using everything you have produced in Parts One and Two as raw material, brainstorm 3 to 4 possible titles and 5 to 6 possible subtitles. Treat the two lists as completely independent of each other. Generate first. Combine later.</p>
+        <div class="grid">
+          <label>My Titles — 3 to 4 options<textarea data-key="titles"></textarea></label>
+          <label>My Subtitles — 5 to 6 options<textarea data-key="subtitles"></textarea></label>
+        </div>
+      </article>
+    </section>
+
+    <!-- EMOTION TRIGGERS -->
+    <section id="emotion">
+      <div class="section-label"><span>Exercise C-2 · Part Three cont.</span><h2>Emotion Triggers</h2></div>
+      <article class="exercise">
+        <p>Before you move to Part Four, ask yourself: what should the reader feel the moment they first encounter your cover? Mark every trigger that applies to your book's core promise. Then look back at your titles and subtitles — the ones that activate a trigger clearly and specifically are worth taking into Part Four.</p>
+
+        <h3>Aspirational Triggers</h3>
+        <div class="checks">
+          <label><input type="checkbox" data-key="trig_smarter"> Smarter / More Knowledgeable</label>
+          <label><input type="checkbox" data-key="trig_wealthier"> Wealthier / More Financially Secure</label>
+          <label><input type="checkbox" data-key="trig_healthier"> Healthier / More Physically Vital</label>
+          <label><input type="checkbox" data-key="trig_happier"> Happier / More Emotionally Fulfilled</label>
+          <label><input type="checkbox" data-key="trig_confident"> More Confident / More Capable</label>
+          <label><input type="checkbox" data-key="trig_purposeful"> More Purposeful / Living with Greater Meaning</label>
+          <label><input type="checkbox" data-key="trig_connected"> Better Connected / More Loved or Respected</label>
+          <label><input type="checkbox" data-key="trig_productive"> More Productive / Better Use of Time</label>
+          <label><input type="checkbox" data-key="trig_creative"> More Creative / More Expressive</label>
+          <label><input type="checkbox" data-key="trig_freer"> Freer / More Independent</label>
+        </div>
+
+        <h3 style="margin-top:18px">Insight and Understanding Triggers</h3>
+        <div class="checks">
+          <label><input type="checkbox" data-key="trig_informed"> More Informed / Better Prepared</label>
+          <label><input type="checkbox" data-key="trig_wiser"> Wiser / More Experienced</label>
+          <label><input type="checkbox" data-key="trig_seen"> Validated / Understood / Seen</label>
+          <label><input type="checkbox" data-key="trig_curious"> Curious / Intrigued / Wanting to Know More</label>
+          <label><input type="checkbox" data-key="trig_surprised"> Surprised / Challenged / Intellectually Provoked</label>
+          <label><input type="checkbox" data-key="trig_inspired"> Inspired / Moved / Emotionally Awakened</label>
+          <label><input type="checkbox" data-key="trig_larger"> Connected to Something Larger / Part of a Story</label>
+        </div>
+
+        <h3 style="margin-top:18px">Relief and Resolution Triggers</h3>
+        <div class="checks">
+          <label><input type="checkbox" data-key="trig_relieved"> Relieved / No Longer Alone in This</label>
+          <label><input type="checkbox" data-key="trig_reassured"> Reassured / Confident This Can Be Solved</label>
+          <label><input type="checkbox" data-key="trig_clear"> Clear / No Longer Confused</label>
+          <label><input type="checkbox" data-key="trig_safe"> Safe / Protected / Prepared</label>
+          <label><input type="checkbox" data-key="trig_vindicated"> Vindicated / Finally Understood</label>
+        </div>
+
+        <label style="margin-top:16px">Other emotional trigger<textarea data-key="otherTrigger" style="min-height:60px"></textarea></label>
+
+        <h3 style="margin-top:22px">Color and Typography Direction</h3>
+        <p>Based on the triggers you marked and the Color and Typography charts above, which colors and typeface categories align most strongly with your book's promise and your reader's emotional world?</p>
+        <div class="grid">
+          <label>Which colors align most strongly with your Emotion Triggers and your book's promise?<textarea data-key="colors"></textarea></label>
+          <label>Why does this color feel right for your specific reader?<textarea data-key="colorReason"></textarea></label>
+          <label>Which typography style aligns most strongly with your Emotion Triggers and your book's promise?<textarea data-key="typography"></textarea></label>
+          <label>Why does this typographic direction feel right for your specific reader?<textarea data-key="typographyReason"></textarea></label>
+        </div>
+      </article>
+    </section>
+
+    <!-- PART FOUR -->
+    <section id="part-four">
+      <div class="section-label"><span>Exercise C-2 · Part Four</span><h2>Test Each Against the Promise</h2></div>
+      <article class="exercise">
+        <p>Pick your top three title and subtitle combinations. For each one, write approximately 25 words that explain specifically how the book delivers on the promise that combination implies. Not what the book is about — what it delivers. What the reader will have, know, or be able to do after reading it that they do not have now.</p>
+        <p>A subtitle that produces a vague or wandering explanation is telling you something important: the promise is not yet precise enough.</p>
+        <div class="grid three">
+          <label>Combination 1<textarea data-key="combo1"></textarea></label>
+          <label>How does the book deliver on that promise? (~25 words)<textarea data-key="deliver1"></textarea></label>
+          <label>Audience reaction when tested<textarea data-key="reaction1"></textarea></label>
+
+          <label>Combination 2<textarea data-key="combo2"></textarea></label>
+          <label>How does the book deliver on that promise? (~25 words)<textarea data-key="deliver2"></textarea></label>
+          <label>Audience reaction when tested<textarea data-key="reaction2"></textarea></label>
+
+          <label>Combination 3<textarea data-key="combo3"></textarea></label>
+          <label>How does the book deliver on that promise? (~25 words)<textarea data-key="deliver3"></textarea></label>
+          <label>Audience reaction when tested<textarea data-key="reaction3"></textarea></label>
+        </div>
+      </article>
+    </section>
+
+    <!-- PART FIVE -->
+    <section id="part-five">
+      <div class="section-label"><span>Exercise C-2 · Part Five</span><h2>Establish Your Author Positioning</h2></div>
+      <article class="exercise">
+        <p>Your title and subtitle tell the reader what the book will do for them. Part Five asks a different question entirely: why should they trust you to deliver on that promise? Positioning is the specific answer to a specific question — why is this particular person the right one to write this particular book for this particular reader? That answer is almost never your most impressive credential. It is your most relevant one.</p>
+        <label>My Authority Headline — the single most compelling qualification I bring to this book<textarea data-key="authorityHeadline"></textarea></label>
+        <label style="margin-top:14px">My 25-Word Supporting Statement — written as a trusted colleague would introduce you before a keynote<textarea data-key="supportingStatement"></textarea></label>
+        <label style="margin-top:14px">How My Reader Would Find Me — words and phrases they would search for when they need what I know<textarea data-key="searchVocabulary"></textarea></label>
+      </article>
+    </section>
+
+    <!-- PART SIX -->
+    <section id="part-six">
+      <div class="section-label"><span>Exercise C-2 · Part Six</span><h2>Create Your AI Cover and Back Cover Mock</h2></div>
+      <article class="exercise">
+        <p>Fill in the fields below, then generate your front cover and back cover AI prompts. Paste each prompt into an AI image generation tool — Claude, ChatGPT with DALL-E, Midjourney, or Adobe Firefly. Run the prompt two or three times and select the version that best captures your vision. AI tools frequently struggle with text rendering — if the title or subtitle appears incorrectly, use Canva or Adobe Express to correct the text while preserving the design.</p>
+        <p><strong>Print the cover. Put it somewhere you will see it every day.</strong> It is a visual mantra — a reminder of what you are building, who you are building it for, and what it will mean when it is done.</p>
+
+        <h3>Front Cover</h3>
+        <div class="grid">
+          <label>Final working title<textarea data-key="finalTitle"></textarea></label>
+          <label>Final working subtitle<textarea data-key="finalSubtitle"></textarea></label>
+          <label>Genre and target reader<textarea data-key="targetReader"></textarea></label>
+          <label>Book promise — one sentence<textarea data-key="bookPromise"></textarea></label>
+          <label>Color direction<textarea data-key="coverColors"></textarea></label>
+          <label>Typography direction<textarea data-key="coverType"></textarea></label>
+          <label>Imagery / visual metaphor<textarea data-key="coverImagery"></textarea></label>
+          <label>Overall mood — what should the reader feel?<textarea data-key="coverMood"></textarea></label>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin:16px 0 8px">
+          <button class="btn primary" onclick="makeFrontPrompt()">Generate Front Cover Prompt</button>
+          <button class="btn" onclick="copyOut('frontPrompt')">Copy Front Cover Prompt</button>
+        </div>
+        <pre id="frontPrompt" class="prompt">Complete the fields above, then click Generate.</pre>
+
+        <h3 style="margin-top:28px">Back Cover</h3>
+        <div class="grid">
+          <label>Author name (as it will appear)<textarea data-key="authorName" style="min-height:60px"></textarea></label>
+          <label>Author bio / credibility — drawn from Part Five<textarea data-key="authorBio"></textarea></label>
+          <label>Back-cover promise restated<textarea data-key="backPromise"></textarea></label>
+          <label>What readers will find inside — reasons to believe<textarea data-key="insideBook"></textarea></label>
+          <label>Endorsement or testimonial quote<textarea data-key="endorsement"></textarea></label>
+          <label>Call to action<textarea data-key="cta"></textarea></label>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin:16px 0 8px">
+          <button class="btn primary" onclick="makeBackPrompt()">Generate Back Cover Prompt</button>
+          <button class="btn" onclick="copyOut('backPrompt')">Copy Back Cover Prompt</button>
+        </div>
+        <pre id="backPrompt" class="prompt">Complete the fields above, then click Generate.</pre>
+
+        <label style="margin-top:20px">My Cover Notes — what I would keep, change, or try next<textarea data-key="coverNotes"></textarea></label>
+      </article>
+    </section>
+
+  </main>
+</div>
+
+<footer class="footer">
+  <p>ACCESS Section C-2 · © 2026 The Grandview Group · Draft — Not for Distribution</p>
+  <p style="font-size:11px;margin-top:4px">Your answers are saved automatically to this browser. Use Export Answers to save a copy. Answers saved here are not accessible from other devices or browsers.</p>
+</footer>
+
+<script>
+const KEY = 'access_c2_v5';
+
+function fields() {
+  return [...document.querySelectorAll('[data-key]')];
+}
+
+function saveNow() {
+  const data = {};
+  fields().forEach(el => {
+    data[el.dataset.key] = el.type === 'checkbox' ? el.checked : el.value;
+  });
+  localStorage.setItem(KEY, JSON.stringify(data));
+  updateProgress();
+}
+
+function load() {
+  try {
+    const data = JSON.parse(localStorage.getItem(KEY) || '{}');
+    fields().forEach(el => {
+      if (data[el.dataset.key] !== undefined) {
+        if (el.type === 'checkbox') el.checked = data[el.dataset.key];
+        else el.value = data[el.dataset.key];
+      }
+    });
+  } catch(e) {}
+  updateProgress();
+}
+
+function updateProgress() {
+  const fs = fields();
+  const done = fs.filter(el => el.type === 'checkbox' ? el.checked : el.value.trim()).length;
+  const pct = fs.length ? Math.round(done / fs.length * 100) : 0;
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressText').textContent = pct + '% complete · ' + done + ' of ' + fs.length + ' fields';
+}
+
+function downloadJSON() {
+  saveNow();
+  const data = localStorage.getItem(KEY) || '{}';
+  const blob = new Blob([data], {type: 'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'ACCESS_C2_answers.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function clearAll() {
+  if (confirm('Clear all saved answers for this module?')) {
+    localStorage.removeItem(KEY);
+    fields().forEach(el => {
+      if (el.type === 'checkbox') el.checked = false;
+      else el.value = '';
+    });
+    updateProgress();
+  }
+}
+
+function val(k) {
+  const el = document.querySelector(`[data-key="${k}"]`);
+  return el ? el.value.trim() : '';
+}
+
+function checkedLabels() {
+  return [...document.querySelectorAll('.checks input:checked')]
+    .map(i => i.parentElement.textContent.trim())
+    .join(', ');
+}
+
+function copyOut(id) {
+  const el = document.getElementById(id);
+  navigator.clipboard.writeText(el.textContent)
+    .then(() => { el.style.borderColor = 'var(--gold)'; setTimeout(() => el.style.borderColor = '', 1200); })
+    .catch(() => {});
+}
+
+function makeTriggerPrompt() {
+  const out = `I am writing a non-fiction book and developing my title and subtitle. Here are my audience personas and my initial Trigger List.
+
+AUDIENCE PERSONAS:
+Persona 1: ${val('persona1') || '[Complete Persona 1 above]'}
+Persona 2: ${val('persona2') || '[Complete Persona 2 above]'}
+Persona 3: ${val('persona3') || '[Complete Persona 3 above]'}
+
+MY TRIGGER LIST:
+${val('triggerList') || '[Complete your Trigger List above]'}
+
+Please generate the following:
+
+1. SYNONYMS: For each word or phrase in my Trigger List, provide 3 to 5 synonyms or related terms that might resonate more powerfully with my audience personas.
+
+2. METAPHORS AND ANALOGIES: Generate metaphors that capture what the transformation or insight this book promises feels like. For an Action Promise book, complete: going from where my reader is now to where my book takes them is like ___. For an Insight Promise book, complete: discovering this subject for the first time is like ___. Push for variety.
+
+3. QUESTIONS THE READER IS ALREADY ASKING: Generate the actual questions my audience personas are asking, in their own language. For Action Promise readers, these may be urgent and problem-focused. For Insight Promise readers, they may be curious and exploratory.
+
+4. POP CULTURE PHRASES: Well-known pop culture catchphrases, taglines, or expressions that use any of these words or themes. Focus on phrases that are widely recognized and emotionally resonant.
+
+5. ADAPTABLE SLOGANS: Famous advertising slogans or cultural phrases that could be adapted for a book title or subtitle. Identify the pivot word in each slogan and show how replacing it with a word from my Trigger List might produce a title or subtitle candidate.
+
+6. REAL TITLES: Actual titles of books, films, courses, or programs that address similar themes or audiences. Label each clearly as (actual book title), (actual film title), or (actual course title).
+
+7. WORD PLAY: Examples of puns, double entendres, alliteration, or coined words that combine elements from my Trigger List in unexpected or memorable ways. Flag any that illuminate the subject rather than obscure it.
+
+8. CONTRADICTION AND TENSION: Title or subtitle candidates that place two opposing ideas from my Trigger List in deliberate conflict. The goal is to create a question in the reader's mind that can only be resolved by opening the book.
+
+9. THE IMPLIED PROMISE OR SECRET: Title and subtitle candidates built around the suggestion that the reader is about to be let in on something they were never supposed to know, or something most people have simply never thought to ask.
+
+The goal is to expand my brainstorming vocabulary, not to produce a finished title. Do not filter or edit for quality. Give me volume.`;
+
+  document.getElementById('triggerPrompt').textContent = out;
+  saveNow();
+}
+
+function makeFrontPrompt() {
+  const triggers = checkedLabels();
+  const other = val('otherTrigger');
+  const allTriggers = [triggers, other].filter(Boolean).join('; ');
+
+  const out = `Create a professional non-fiction book cover with the following specifications.
+
+TITLE: ${val('finalTitle') || '[Your title]'}
+SUBTITLE: ${val('finalSubtitle') || '[Your subtitle]'}
+AUTHOR NAME: ${val('authorName') || '[Your name]'}
+
+GENRE AND AUDIENCE: ${val('targetReader') || '[Your genre and target reader]'}
+BOOK PROMISE: ${val('bookPromise') || '[What will the reader have, know, or be able to do after reading this book?]'}
+
+EMOTIONAL TONE: This cover should make the reader feel — ${allTriggers || val('coverMood') || '[Your emotional tone target]'}. Every design decision should serve that feeling.
+
+COLOR PALETTE: ${val('coverColors') || val('colors') || '[Your color direction]'}. These colors should evoke ${val('colorReason') || 'the emotional state identified above'}.
+
+TYPOGRAPHY: ${val('coverType') || val('typography') || '[Your typographic direction]'}. The title should be the dominant visual element. The subtitle should be clearly readable at thumbnail size. The author name should be present but subordinate to the title.
+
+IMAGERY: ${val('coverImagery') || '[Abstract / photographic / illustrative / purely typographic]'}. If imagery is used, it should reinforce the promise of the title and subtitle, not merely decorate the cover.
+
+DESIGN PRINCIPLES: Clean and intentional. Must be legible at 120 x 180 pixel Amazon thumbnail size. Portrait orientation. No author photo on the front cover. The cover should communicate clearly and immediately what this book will do — or offer — for the reader who needs it.`;
+
+  document.getElementById('frontPrompt').textContent = out;
+  saveNow();
+}
+
+function makeBackPrompt() {
+  const out = `Create a professional non-fiction book back cover with the following specifications.
+
+BOOK TITLE: ${val('finalTitle') || '[Your title]'}
+BOOK SUBTITLE: ${val('finalSubtitle') || '[Your subtitle]'}
+
+DESIGN CONTINUITY: Match the color palette, typographic direction, and emotional tone of the front cover exactly. The front and back cover are two faces of the same object and should feel visually unified.
+
+BACK COVER COPY — Structure the copy in three parts:
+
+Part One — Deepen the Promise: ${val('backPromise') || val('bookPromise') || '[Restate or expand the promise made by the title and subtitle. Name specifically what the reader will be able to do, understand, or experience.]'}
+
+Part Two — Reasons to Believe: ${val('insideBook') || '[What will the reader find inside the book that justifies the promise? This is not a list of credentials — it is evidence that the promise is real and deliverable.]'}
+
+Part Three — The Close: ${val('cta') || '[One sentence that gives the reader a reason to open this book now rather than set it down.]'}
+
+AUTHOR BIO: Present the author as uniquely qualified and positioned to write this book for this reader. The bio should feel earned and specific, not a resume summary.
+Authority Headline: ${val('authorityHeadline') || '[Your authority headline from Part Five]'}
+Supporting Statement: ${val('supportingStatement') || '[Your 25-word supporting statement from Part Five]'}
+
+ENDORSEMENT: ${val('endorsement') || '[Include endorsement quote here, or label as ENDORSEMENT PLACEHOLDER if not yet available.]'}
+
+DESIGN: Clean and professional. Portrait orientation. Space for author photo on back cover. The back cover should answer the question the front cover raises and give the reader every reason to say yes.`;
+
+  document.getElementById('backPrompt').textContent = out;
+  saveNow();
+}
+
+document.addEventListener('input', saveNow);
+document.addEventListener('change', saveNow);
+window.addEventListener('DOMContentLoaded', load);
+</script>
+</body>
+</html>
